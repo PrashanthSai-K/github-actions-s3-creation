@@ -1,0 +1,47 @@
+name: Terraform S3 Deployment
+
+on:
+  push:
+    branches:
+      - main  
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: sai-runner
+
+    steps:
+      # Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # OIDC AWS login (NO access keys needed)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+          aws-region: us-east-1
+
+      # Terraform setup
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.2
+
+      # Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+      # Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      # Upload file to S3 (AFTER bucket is created)
+      - name: Upload file to S3
+        run: |
+          BUCKET_NAME=$(terraform -chdir=terraform output -raw bucket_name)
+          echo "Uploading sample.txt to $BUCKET_NAME"
+          aws s3 cp ./sample.txt s3://$BUCKET_NAME/
