@@ -42,6 +42,6 @@ jobs:
       # Upload file to S3 (AFTER bucket is created)
       - name: Upload file to S3
         run: |
-          BUCKET_NAME=$(terraform -chdir=terraform output -raw bucket_name)
+          BUCKET_NAME=$(terraform output -raw bucket_name)
           echo "Uploading sample.txt to $BUCKET_NAME"
           aws s3 cp ./sample.txt s3://$BUCKET_NAME/
