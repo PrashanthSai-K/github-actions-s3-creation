@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: sai-runner
+    runs-on: self-hosted
 
     steps:
       # Checkout repo
