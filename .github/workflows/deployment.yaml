@@ -37,7 +37,7 @@ jobs:
 
       # Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -var="bucketname=sai-s3-bucket-github-actions" -auto-approve
 
       # Upload file to S3 (AFTER bucket is created)
       - name: Upload file to S3
